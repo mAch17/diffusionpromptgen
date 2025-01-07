@@ -2,7 +2,7 @@ use eframe::egui;
 
 
 // create an enum called AttrbuteWeight with two values low and high and implementing Debug
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum AttributeWeight {
     Low,
     High,
@@ -105,17 +105,17 @@ struct FOOCUSDiffusionPromptApp{
     
     
     pub cinematic_look : Option<Look>,
-    pub cinematic_look_weight : Option<AttributeWeight>,
+    pub cinematic_look_weight : AttributeWeight,
     
 
     pub camera_angle : Option<CameraAngle>,
-    pub camera_angle_weight : Option<AttributeWeight>,
+    pub camera_angle_weight : AttributeWeight,
 
     pub lighting : Option<Lighting>,
-    pub lighting_weight : Option<AttributeWeight>,
+    pub lighting_weight : AttributeWeight,
 
     pub look : Option<ImageLook>,
-    pub look_weight : Option<AttributeWeight>
+    pub look_weight : AttributeWeight
 
 
 
@@ -131,13 +131,13 @@ impl Default for FOOCUSDiffusionPromptApp {
             subject_attributes : Vec::new(),        
 
             cinematic_look : None,
-            cinematic_look_weight  : None,
+            cinematic_look_weight  : AttributeWeight::Low,
             camera_angle : None,
-            camera_angle_weight   : None,
+            camera_angle_weight   : AttributeWeight::Low,
             lighting   : None,
-            lighting_weight : None,
+            lighting_weight : AttributeWeight::Low,
             look    : None,
-            look_weight : None,
+            look_weight : AttributeWeight::Low,
         }
     }
 }
@@ -145,17 +145,28 @@ impl Default for FOOCUSDiffusionPromptApp {
 impl eframe::App for FOOCUSDiffusionPromptApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
+
+
             ui.heading("Prompt creator for Fooocus Diffusion");
+
             ui.horizontal(|ui| {
-                let name_label = ui.label("Your name: ");
+
+                let decription_label = ui.label(" Subject decription : ");
                 ui.text_edit_singleline(&mut self.subject_description)
-                    .labelled_by(name_label.id);
+                    .labelled_by(decription_label.id);
+
+                let description_weight_label  = ui.label(" Subject Weightage : ");
+                ui.radio_value(&mut self.subject_weight, AttributeWeight::Low, "Low").labelled_by(description_weight_label.id);
+                ui.radio_value(&mut self.subject_weight, AttributeWeight::High, "High").labelled_by(description_weight_label.id);
+
             });
             
 
             ui.image(egui::include_image!(
                 "../assets/ferris.png"
             ));
+
+
         });
     }
 }
@@ -163,7 +174,7 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
 fn main() -> eframe::Result {
     env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
+        viewport: egui::ViewportBuilder::default().with_inner_size([640.0, 500.0]),
         ..Default::default()
     };
     eframe::run_native(
