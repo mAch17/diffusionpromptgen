@@ -921,6 +921,7 @@ dependencies = [
  "egui_extras",
  "env_logger",
  "image",
+ "rand",
 ]
 
 [[package]]

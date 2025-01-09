@@ -1,15 +1,15 @@
 use eframe::egui;
-
+use rand::{thread_rng, Rng};
 
 // create an enum called AttrbuteWeight with two values low and high and implementing Debug
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq,Clone)]
 enum AttributeWeight {
     Low,
     High,
 }
 
 // Create an enum called CameraAngle implementing Debug and varinats ExtremeCloseUp, CloseUp, MediumShot, OverTheShoulder, LongShot, ExtremeLongShot, FullShot, FullBodyView, POVShot, EyeLevelShot, HighAngleShot, LowAngleShot, DutchAngleShot, DroneShot, GoProShot, FishEyeShot, birdEyeView, RuleOfThirdShot, CandidShot, SilhouetteShot
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 enum CameraAngle {
     ExtremeCloseUp, 
     CloseUp, 
@@ -34,7 +34,7 @@ enum CameraAngle {
 }
 
 // Create an enum called Look implementing Debug and variants Cinematic, UltraRealistic, FilmGrain, DramaticLighting, GenreHorror, GenreWestern, GenreFantasy, GenreRomantic, GenreAnimation, GenreManga, ActionScene, MotionBlur, DynamicAction, DynamicMotion
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 enum Look {
     Cinematic, 
     UltraRealistic, 
@@ -53,7 +53,7 @@ enum Look {
 }
 
 //Create an attribute called Lighting deriving debug and having variants StudioLights, BrightLights, NeonLights, WarmLights , ColdLights , HighKeyLighting , LowKeyLighting, RimLighting , PracticaLighting , MotivatorLighting , Sunny , GoldenHour , Rainy , Foggy , Night , Afternoon 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 enum Lighting {
     StudioLights, 
     BrightLights, 
@@ -74,7 +74,7 @@ enum Lighting {
 }
 
 // Create an enum CameraStyle deriving debug and having variants ArriAlexa, Super16_VintageFilm, CanonCinemaEOS, SonyCineAlta , QuentinTarantinoStyle , AlfredHitchcockStyle, MartinScorseseStyle , ChristopherNolanStyle , MichaelBayStyle , JohnWooStyle , PeterHyamsStyles , JamesCameronStyle , ElsaGarrisonStyle , WalterIoossStyle , NeilLeiferStyle, CanonEOS_1DXMarkII , GoProHero9Black , SonyAlphaA9II
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 enum ImageLook {
     StudioLook, 
     BrightLook, 
@@ -96,7 +96,7 @@ enum ImageLook {
 
 
 // create a struct FOOCUSDiffusionPrompt with no members and it implements Debug
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 struct FOOCUSDiffusionPromptApp{
     pub subject_description : String,
     pub subject_weight : AttributeWeight,
@@ -142,6 +142,16 @@ impl Default for FOOCUSDiffusionPromptApp {
     }
 }
 
+// implement gen_prompt for FOOCUSDiffusionPromptApp returning a prompt as string
+
+fn gen_prompt( status:FOOCUSDiffusionPromptApp ) -> String {
+        // TODO: implement this
+        // generate a random integer
+        let mut rng = thread_rng();
+        return format!("{}",rng.gen::<i32>());
+}
+
+
 impl eframe::App for FOOCUSDiffusionPromptApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -160,11 +170,23 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
                 ui.radio_value(&mut self.subject_weight, AttributeWeight::High, "High").labelled_by(description_weight_label.id);
 
             });
-            
+
+            ui.horizontal(|ui| {
+
+                let output_text = gen_prompt(self.clone());
+                let po = ui.label("Output::");
+                ui.label(output_text).labelled_by(po.id);
+                
+
+            });
 
             ui.image(egui::include_image!(
                 "../assets/ferris.png"
             ));
+
+
+
+
 
 
         });
