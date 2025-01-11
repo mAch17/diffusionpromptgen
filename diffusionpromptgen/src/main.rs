@@ -100,7 +100,6 @@ enum ImageLook {
 struct FOOCUSDiffusionPromptApp{
     pub subject_description : String,
     pub subject_weight : AttributeWeight,
-    pub subject_emotion : Option<String>,
     pub subject_attributes : Vec<(String,AttributeWeight)>,
     
     
@@ -108,13 +107,13 @@ struct FOOCUSDiffusionPromptApp{
     pub cinematic_look_weight : AttributeWeight,
     
 
-    pub camera_angle : Option<CameraAngle>,
+    pub camera_angle : Option<(&'static str,  egui::ImageSource<'static>,CameraAngle)>,
     pub camera_angle_weight : AttributeWeight,
 
-    pub lighting : Option<Lighting>,
+    pub lighting : Option<(&'static str,  egui::ImageSource<'static>,Lighting)>,
     pub lighting_weight : AttributeWeight,
 
-    pub look : Option<ImageLook>,
+    pub look : Option<(&'static str,  egui::ImageSource<'static>,ImageLook)>,
     pub look_weight : AttributeWeight
 
 
@@ -127,7 +126,6 @@ impl Default for FOOCUSDiffusionPromptApp {
             // initialize all fields to their default values:
             subject_description : String::from(""),
             subject_weight : AttributeWeight::Low,
-            subject_emotion : None,
             subject_attributes : Vec::new(),        
 
             cinematic_look : None,
@@ -281,21 +279,40 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
                 ("Dynamic Motion",egui::include_image!("../assets/ferris.png"),Cinematography::DynamicMotion),
             ];
 
+            ui.label(" Cinematography :  ");
 
-            let mut selected_cinematography_index :Option<usize>= None; 
-            // Create a button for each image option
-            for (index, (string_name,image_path,cinematography)) in cinematography_vec.iter().enumerate() {
-                if ui.button(string_name.clone()).clicked() {
-                    selected_cinematography_index = Some(index);
-                    self.cinematic_look = Some((string_name.clone(),image_path.clone(),cinematography.clone()));
+            ui.horizontal(|ui| {
+
+
+                let mut selected_cinematography_index :Option<usize>= None; 
+                // Create a button for each image option
+                for (index, (string_name,image_path,cinematography)) in cinematography_vec.iter().enumerate() {
+                    if ui.button(string_name.clone()).clicked() {
+                        selected_cinematography_index = Some(index);
+                        self.cinematic_look = Some((string_name.clone(),image_path.clone(),cinematography.clone()));
+                    }
+                }    
+                if ui.button("None").clicked(){
+                    self.cinematic_look = None;
                 }
-            }
+
+            });
+
+
+            
 
             // Display the selected image if available
             if let Some(cinematic_look) = self.cinematic_look.clone() {
                         ui.image(cinematic_look.1);
             }
-   
+            
+            
+            ui.horizontal(|ui| {
+                let description_weight_label  = ui.label(" Cinematography Look Weightage : ");
+                ui.radio_value(&mut self.camera_angle_weight, AttributeWeight::Low, "Low").labelled_by(description_weight_label.id);
+                ui.radio_value(&mut self.camera_angle_weight, AttributeWeight::High, "High").labelled_by(description_weight_label.id);
+            });
+
 
             ui.horizontal(|ui| {
 
