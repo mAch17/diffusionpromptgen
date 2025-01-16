@@ -63,7 +63,7 @@ enum Lighting {
     HighKeyLighting , 
     LowKeyLighting, 
     RimLighting , 
-    PracticaLighting , 
+    PracticalLighting , 
     MotivatorLighting , 
     Sunny , 
     GoldenHour , 
@@ -75,23 +75,25 @@ enum Lighting {
 
 // Create an enum CameraStyle deriving debug and having variants ArriAlexa, Super16_VintageFilm, CanonCinemaEOS, SonyCineAlta , QuentinTarantinoStyle , AlfredHitchcockStyle, MartinScorseseStyle , ChristopherNolanStyle , MichaelBayStyle , JohnWooStyle , PeterHyamsStyles , JamesCameronStyle , ElsaGarrisonStyle , WalterIoossStyle , NeilLeiferStyle, CanonEOS_1DXMarkII , GoProHero9Black , SonyAlphaA9II
 #[derive(Debug,Clone)]
-enum ImageLook {
-    StudioLook, 
-    BrightLook, 
-    NeonLook, 
-    WarmLook , 
-    ColdLook , 
-    HighKeyLook , 
-    LowKeyLook, 
-    RimLook , 
-    PracticaLook , 
-    MotivatorLook , 
-    SunnyLook , 
-    GoldenHourLook , 
-    RainyLook , 
-    FoggyLook , 
-    NightLook , 
-    AfternoonLook 
+enum CameraStyle {
+    ArriAlexa, 
+    Super16_VintageFilm, 
+    CanonCinemaEOS, 
+    SonyCineAlta , 
+    QuentinTarantinoStyle , 
+    AlfredHitchcockStyle, 
+    MartinScorseseStyle , 
+    ChristopherNolanStyle , 
+    MichaelBayStyle  , 
+    JohnWooStyle  , 
+    PeterHyamsStyles , 
+    JamesCameronStyle , 
+    ElsaGarrisonStyle , 
+    WalterIoossStyle , 
+    NeilLeiferStyle, 
+    CanonEOS_1DXMarkII , 
+    GoProHero9Black , 
+    SonyAlphaA9II
 }
 
 
@@ -113,8 +115,8 @@ struct FOOCUSDiffusionPromptApp{
     pub lighting : Option<(&'static str,  egui::ImageSource<'static>,Lighting)>,
     pub lighting_weight : AttributeWeight,
 
-    pub look : Option<(&'static str,  egui::ImageSource<'static>,ImageLook)>,
-    pub look_weight : AttributeWeight
+    pub camera_style : Option<(&'static str,  egui::ImageSource<'static>,CameraStyle)>,
+    pub camera_style_weight : AttributeWeight
 
 
 
@@ -134,8 +136,8 @@ impl Default for FOOCUSDiffusionPromptApp {
             camera_angle_weight   : AttributeWeight::Low,
             lighting   : None,
             lighting_weight : AttributeWeight::Low,
-            look    : None,
-            look_weight : AttributeWeight::Low,
+            camera_style    : None,
+            camera_style_weight : AttributeWeight::Low,
         }
     }
 }
@@ -146,7 +148,7 @@ fn gen_prompt( status:FOOCUSDiffusionPromptApp ) -> String {
         // TODO: implement this
         // generate a random integer
         let mut rng = thread_rng();
-        return format!("{}",rng.gen::<i32>());
+        return format!("{} {}",rng.gen::<i32>(),status.subject_description);
 }
 
 
@@ -261,6 +263,8 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
 
             });
 
+            // Code below for the enum Cinematography
+
             let cinematography_vec = vec![
                ("Cinematic",egui::include_image!("../assets/ferris.png"),Cinematography::Cinematic),
                // Add new elements with the first being incrementing index, second being "../assets/ferris.png", third being from [   Cinematography::UltraRealistic, Cinematography::FilmGrain, Cinematography::DramaticLighting, Cinematography::GenreHorror, Cinematography::GenreWestern, Cinematography::GenreFantasy, Cinematography::GenreRomantic, Cinematography::GenreAnimation, Cinematography::GenreManga,  Cinematography::ActionScene, Cinematography::MotionBlur, Cinematography::DynamicAction,  Cinematography::DynamicMotion]
@@ -308,10 +312,173 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
             
             
             ui.horizontal(|ui| {
-                let description_weight_label  = ui.label(" Cinematography Look Weightage : ");
-                ui.radio_value(&mut self.camera_angle_weight, AttributeWeight::Low, "Low").labelled_by(description_weight_label.id);
-                ui.radio_value(&mut self.camera_angle_weight, AttributeWeight::High, "High").labelled_by(description_weight_label.id);
+            let cinematic_look_label  = ui.label(" Cinematography Look Weightage : ");
+                ui.radio_value(&mut self.cinematic_look_weight, AttributeWeight::Low, "Low").labelled_by(cinematic_look_label.id);
+                ui.radio_value(&mut self.cinematic_look_weight, AttributeWeight::High, "High").labelled_by(cinematic_look_label.id);
             });
+
+            // Camera Angle Selection
+
+            let camera_angle_vec = vec![
+                            ("Extreme Close Up",egui::include_image!("../assets/ferris.png"),CameraAngle::ExtremeCloseUp),
+                            ("Close Up",egui::include_image!("../assets/ferris.png"),CameraAngle::CloseUp),
+                            ("Medium Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::MediumShot),
+                            ("Over The Shoulder",egui::include_image!("../assets/ferris.png"),CameraAngle::OverTheShoulder),
+                            ("Long Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::LongShot),
+                            ("Extreme Long Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::ExtremeLongShot),
+                            ("Full Shot Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::FullShot),
+                            ("Full Body View",egui::include_image!("../assets/ferris.png"),CameraAngle::FullBodyView),
+                            ("POV Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::POVShot),
+                            ("Eye Level Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::EyeLevelShot),
+                            ("High Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::HighAngleShot),
+                            ("Low Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::LowAngleShot),
+                            ("Dutch Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::DutchAngleShot),
+                            ("Drone Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::DroneShot),
+                            ("Gro pro Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::GoProShot),
+                            ("Fish eye Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::FishEyeShot),
+                            ("Bird eye view",egui::include_image!("../assets/ferris.png"),CameraAngle::BirdEyeView),
+                            ("Rule of thirds Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::RuleOfThirdShot),
+                            ("Candid Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::CandidShot),
+                            ("Silhouette Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::SilhouetteShot),
+            ];
+
+            ui.label(" Camera Angle :  ");
+
+            ui.horizontal(|ui| {
+
+
+                let mut selected_camera_angle_index :Option<usize>= None; 
+                // Create a button for each image option
+                for (index, (string_name,image_path,camera_angle)) in camera_angle_vec.iter().enumerate() {
+                    if ui.button(string_name.clone()).clicked() {
+                        selected_camera_angle_index = Some(index);
+                        self.camera_angle = Some((string_name.clone(),image_path.clone(),camera_angle.clone()));
+                    }
+                }    
+                if ui.button("None").clicked(){
+                    self.camera_angle = None;
+                }
+
+            });
+
+            // Display the selected image if available
+            if let Some(camera_angle) = self.camera_angle.clone() {
+                            ui.image(camera_angle.1);
+            }
+
+            ui.horizontal(|ui| {
+                let camera_angle_weight_label  = ui.label(" Camera Angle Weightage : ");
+                    ui.radio_value(&mut self.camera_angle_weight, AttributeWeight::Low, "Low").labelled_by(camera_angle_weight_label.id);
+                    ui.radio_value(&mut self.camera_angle_weight, AttributeWeight::High, "High").labelled_by(camera_angle_weight_label.id);
+                });
+
+            // Selected the camera angle above
+
+            // StudioLights, BrightLights, NeonLights, WarmLights , ColdLights , HighKeyLighting , LowKeyLighting, RimLighting , PracticaLighting , MotivatorLighting , Sunny , GoldenHour , Rainy , Foggy , Night , Afternoon 
+            let lighting_vec = vec![
+                ("Studio Lights",egui::include_image!("../assets/ferris.png"),Lighting::StudioLights),
+                ("Bright Lights",egui::include_image!("../assets/ferris.png"),Lighting::BrightLights),
+                ("Neon Lights",egui::include_image!("../assets/ferris.png"),Lighting::NeonLights),
+                ("Warm Lights",egui::include_image!("../assets/ferris.png"),Lighting::WarmLights),
+                ("Cold Lights",egui::include_image!("../assets/ferris.png"),Lighting::ColdLights),
+                ("High Key Lighting",egui::include_image!("../assets/ferris.png"),Lighting::HighKeyLighting),
+                ("Low Key Lighting",egui::include_image!("../assets/ferris.png"),Lighting::LowKeyLighting),
+                ("Rim Lighting",egui::include_image!("../assets/ferris.png"),Lighting::RimLighting),
+                ("Practical Lighting",egui::include_image!("../assets/ferris.png"),Lighting::PracticalLighting),
+                ("Motivator Lighting",egui::include_image!("../assets/ferris.png"),Lighting::MotivatorLighting),
+                ("Sunny",egui::include_image!("../assets/ferris.png"),Lighting::Sunny),
+                ("Golden Hour",egui::include_image!("../assets/ferris.png"),Lighting::GoldenHour),
+                ("Rainy",egui::include_image!("../assets/ferris.png"),Lighting::Rainy),
+                ("Foggy",egui::include_image!("../assets/ferris.png"),Lighting::Foggy),
+                ("Night",egui::include_image!("../assets/ferris.png"),Lighting::Night),
+                ("Afternoon",egui::include_image!("../assets/ferris.png"),Lighting::Afternoon)
+            ];
+
+            ui.label(" Lighting :  ");
+
+            ui.horizontal(|ui| {
+
+
+                let mut selected_lighting_index :Option<usize>= None; 
+                // Create a button for each image option
+                for (index, (string_name,image_path,lighting)) in lighting_vec.iter().enumerate() {
+                    if ui.button(string_name.clone()).clicked() {
+                        selected_lighting_index = Some(index);
+                        self.lighting = Some((string_name.clone(),image_path.clone(),lighting.clone()));
+                    }
+                }    
+                if ui.button("None").clicked(){
+                    self.lighting = None;
+                }
+
+            });
+
+            // Display the selected image if available
+            if let Some(Lighting) = self.lighting.clone() {
+                ui.image(Lighting.1);
+            }
+
+            ui.horizontal(|ui| {
+                let lighting_label  = ui.label(" Lighting Weightage : ");
+                    ui.radio_value(&mut self.lighting_weight, AttributeWeight::Low, "Low").labelled_by(lighting_label.id);
+                    ui.radio_value(&mut self.lighting_weight, AttributeWeight::High, "High").labelled_by(lighting_label.id);
+                });
+
+
+            // Selected Lighting Above
+            
+            // Select camera style below out of     ArriAlexa, Super16_VintageFilm, CanonCinemaEOS, SonyCineAlta , QuentinTarantinoStyle , AlfredHitchcockStyle, MartinScorseseStyle , ChristopherNolanStyle , MichaelBayStyle  , JohnWooStyle  , PeterHyamsStyles , JamesCameronStyle , ElsaGarrisonStyle , WalterIoossStyle , NeilLeiferStyle, CanonEOS_1DXMarkII , GoProHero9Black , SonyAlphaA9II
+            let camera_style_vec = vec![
+                ("Arri Alexa", egui::include_image!("../assets/ferris.png"), CameraStyle::ArriAlexa),
+                ("Super16 Vintage Film", egui::include_image!("../assets/ferris.png"), CameraStyle:: Super16_VintageFilm),
+                ("Canon Cinema EOS", egui::include_image!("../assets/ferris.png"), CameraStyle:: CanonCinemaEOS),
+                ("Sony Cine Alta ", egui::include_image!("../assets/ferris.png"), CameraStyle:: SonyCineAlta ),
+                ("Quentin Tarantino", egui::include_image!("../assets/ferris.png"), CameraStyle:: QuentinTarantinoStyle  ),
+                ("Alfred Hitchcock", egui::include_image!("../assets/ferris.png"), CameraStyle:: AlfredHitchcockStyle  ),
+                ("Martin Scorsese", egui::include_image!("../assets/ferris.png"), CameraStyle:: MartinScorseseStyle   ),
+                ("Christopher Nolan", egui::include_image!("../assets/ferris.png"), CameraStyle:: ChristopherNolanStyle),
+                ("Michael Bay",egui::include_image!("../assets/ferris.png"), CameraStyle:: MichaelBayStyle    ),
+                ("John Woo",egui::include_image!("../assets/ferris.png"), CameraStyle:: JohnWooStyle     ),
+                ("Peter Hyams  ",egui::include_image!("../assets/ferris.png"), CameraStyle:: PeterHyamsStyles  ),
+                ("James Cameron",egui::include_image!("../assets/ferris.png"), CameraStyle:: JamesCameronStyle   ),
+                ("Elsa Garrison",egui::include_image!("../assets/ferris.png"), CameraStyle:: ElsaGarrisonStyle),
+                ("Walter Iooss",egui::include_image!("../assets/ferris.png"), CameraStyle:: WalterIoossStyle    ),
+                ("Neil Leifer",egui::include_image!("../assets/ferris.png"), CameraStyle:: NeilLeiferStyle     ),
+                ("Canon EOS 1DX Mark II ", egui::include_image!("../assets/ferris.png"), CameraStyle::CanonEOS_1DXMarkII  ),
+                ("Sony Alpha A9 II",egui::include_image!("../assets/ferris.png"), CameraStyle:: SonyAlphaA9II),
+            ];
+
+            ui.label(" Camera Style :  ");
+
+            ui.horizontal(|ui| {
+
+
+                let mut selected_camera_style_index :Option<usize>= None; 
+                // Create a button for each image option
+                for (index, (string_name,image_path,camera_style)) in camera_style_vec.iter().enumerate() {
+                    if ui.button(string_name.clone()).clicked() {
+                        selected_camera_style_index = Some(index);
+                        self.camera_style = Some((string_name.clone(),image_path.clone(),camera_style.clone()));
+                    }
+                }    
+                if ui.button("None").clicked(){
+                    self.lighting = None;
+                }
+
+            });
+
+            // Display the selected image if available
+            if let Some(camera_style) = self.camera_style.clone() {
+                ui.image(camera_style.1);
+            }
+            
+            ui.horizontal(|ui| {
+                let camera_style_weight_label  = ui.label(" Camera Angle Weightage : ");
+                    ui.radio_value(&mut self.camera_style_weight , AttributeWeight::Low, "Low").labelled_by(camera_style_weight_label.id);
+                    ui.radio_value(&mut self.camera_style_weight , AttributeWeight::High, "High").labelled_by(camera_style_weight_label.id);
+                });
+
+            // Select the camera style above
 
 
             ui.horizontal(|ui| {
@@ -322,6 +489,7 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
                 
 
             });
+            
 
             //ui.image(egui::include_image!(
             //    "../assets/ferris.png"
@@ -339,7 +507,7 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
 fn main() -> eframe::Result {
     env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([640.0, 500.0]),
+        viewport: egui::ViewportBuilder::default().with_inner_size([1920.0, 950.0]),
         ..Default::default()
     };
     eframe::run_native(
