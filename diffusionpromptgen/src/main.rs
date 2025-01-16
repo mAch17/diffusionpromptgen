@@ -266,49 +266,55 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
             // Code below for the enum Cinematography
 
             let cinematography_vec = vec![
-               ("Cinematic",egui::include_image!("../assets/ferris.png"),Cinematography::Cinematic),
+                (0 as usize,"Cinematic",egui::include_image!("../assets/ferris.png"),Cinematography::Cinematic),
                // Add new elements with the first being incrementing index, second being "../assets/ferris.png", third being from [   Cinematography::UltraRealistic, Cinematography::FilmGrain, Cinematography::DramaticLighting, Cinematography::GenreHorror, Cinematography::GenreWestern, Cinematography::GenreFantasy, Cinematography::GenreRomantic, Cinematography::GenreAnimation, Cinematography::GenreManga,  Cinematography::ActionScene, Cinematography::MotionBlur, Cinematography::DynamicAction,  Cinematography::DynamicMotion]
-               ("Ultra Realistic",egui::include_image!("../assets/ferris.png"),Cinematography::UltraRealistic),
-                ("Film Grain",egui::include_image!("../assets/ferris.png"),Cinematography::FilmGrain),
-                ("Dramatic Lighting",egui::include_image!("../assets/ferris.png"),Cinematography::DramaticLighting),
-                ("Horror",egui::include_image!("../assets/ferris.png"),Cinematography::GenreHorror),
-                ("Western",egui::include_image!("../assets/ferris.png"),Cinematography::GenreWestern),
-                ("Fantasy",egui::include_image!("../assets/ferris.png"),Cinematography::GenreFantasy),
-                ("Romantic",egui::include_image!("../assets/ferris.png"),Cinematography::GenreRomantic),
-                ("Animation",egui::include_image!("../assets/ferris.png"),Cinematography::GenreAnimation),
-                ("Manga",egui::include_image!("../assets/ferris.png"),Cinematography::GenreManga),
-                ("Action Scene",egui::include_image!("../assets/ferris.png"),Cinematography::ActionScene),
-                ("Motion Blur",egui::include_image!("../assets/ferris.png"),Cinematography::MotionBlur),
-                ("Dynamic Action",egui::include_image!("../assets/ferris.png"),Cinematography::DynamicAction),
-                ("Dynamic Motion",egui::include_image!("../assets/ferris.png"),Cinematography::DynamicMotion),
+                (1 as usize,"Ultra Realistic",egui::include_image!("../assets/ferris.png"),Cinematography::UltraRealistic),
+                (2 as usize, "Film Grain",egui::include_image!("../assets/ferris.png"),Cinematography::FilmGrain),
+                (3 as usize, "Dramatic Lighting",egui::include_image!("../assets/ferris.png"),Cinematography::DramaticLighting),
+                (4 as usize, "Horror",egui::include_image!("../assets/ferris.png"),Cinematography::GenreHorror),
+                (5 as usize, "Western",egui::include_image!("../assets/ferris.png"),Cinematography::GenreWestern),
+                (6 as usize, "Fantasy",egui::include_image!("../assets/ferris.png"),Cinematography::GenreFantasy),
+                (7 as usize, "Romantic",egui::include_image!("../assets/ferris.png"),Cinematography::GenreRomantic),
+                (8 as usize, "Animation",egui::include_image!("../assets/ferris.png"),Cinematography::GenreAnimation),
+                (9 as usize, "Manga",egui::include_image!("../assets/ferris.png"),Cinematography::GenreManga),
+                (10 as usize,"Action Scene",egui::include_image!("../assets/ferris.png"),Cinematography::ActionScene),
+                (11 as usize, "Motion Blur",egui::include_image!("../assets/ferris.png"),Cinematography::MotionBlur),
+                (12 as usize, "Dynamic Action",egui::include_image!("../assets/ferris.png"),Cinematography::DynamicAction),
+                (13 as usize, "Dynamic Motion",egui::include_image!("../assets/ferris.png"),Cinematography::DynamicMotion),
             ];
 
             ui.label(" Cinematography :  ");
 
             ui.horizontal(|ui| {
+                ui.vertical(|ui| {
 
 
-                let mut selected_cinematography_index :Option<usize>= None; 
-                // Create a button for each image option
-                for (index, (string_name,image_path,cinematography)) in cinematography_vec.iter().enumerate() {
-                    if ui.button(string_name.clone()).clicked() {
-                        selected_cinematography_index = Some(index);
-                        self.cinematic_look = Some((string_name.clone(),image_path.clone(),cinematography.clone()));
+                    let mut selected_cinematography_index :Option<usize>= None; 
+                    // Create a button for each image option
+                    for chunk in cinematography_vec.chunks(5){
+                        ui.horizontal(|ui| {
+                            for (index, string_name,image_path,cinematography) in chunk.iter() {
+                                if ui.button(string_name.clone()).clicked() {
+                                    selected_cinematography_index = Some(*index);
+                                    self.cinematic_look = Some((string_name.clone(),image_path.clone(),cinematography.clone()));
+                                }
+                            }
+                        });
+                    }    
+                    if ui.button("None").clicked(){
+                        self.cinematic_look = None;
                     }
-                }    
-                if ui.button("None").clicked(){
-                    self.cinematic_look = None;
+
+                });
+
+
+                
+
+                // Display the selected image if available
+                if let Some(cinematic_look) = self.cinematic_look.clone() {
+                            ui.image(cinematic_look.1);
                 }
-
             });
-
-
-            
-
-            // Display the selected image if available
-            if let Some(cinematic_look) = self.cinematic_look.clone() {
-                        ui.image(cinematic_look.1);
-            }
             
             
             ui.horizontal(|ui| {
@@ -320,103 +326,115 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
             // Camera Angle Selection
 
             let camera_angle_vec = vec![
-                            ("Extreme Close Up",egui::include_image!("../assets/ferris.png"),CameraAngle::ExtremeCloseUp),
-                            ("Close Up",egui::include_image!("../assets/ferris.png"),CameraAngle::CloseUp),
-                            ("Medium Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::MediumShot),
-                            ("Over The Shoulder",egui::include_image!("../assets/ferris.png"),CameraAngle::OverTheShoulder),
-                            ("Long Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::LongShot),
-                            ("Extreme Long Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::ExtremeLongShot),
-                            ("Full Shot Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::FullShot),
-                            ("Full Body View",egui::include_image!("../assets/ferris.png"),CameraAngle::FullBodyView),
-                            ("POV Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::POVShot),
-                            ("Eye Level Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::EyeLevelShot),
-                            ("High Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::HighAngleShot),
-                            ("Low Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::LowAngleShot),
-                            ("Dutch Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::DutchAngleShot),
-                            ("Drone Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::DroneShot),
-                            ("Gro pro Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::GoProShot),
-                            ("Fish eye Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::FishEyeShot),
-                            ("Bird eye view",egui::include_image!("../assets/ferris.png"),CameraAngle::BirdEyeView),
-                            ("Rule of thirds Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::RuleOfThirdShot),
-                            ("Candid Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::CandidShot),
-                            ("Silhouette Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::SilhouetteShot),
+                            (0 as usize,"Extreme Close Up",egui::include_image!("../assets/ferris.png"),CameraAngle::ExtremeCloseUp),
+                            (1 as usize,"Close Up",egui::include_image!("../assets/ferris.png"),CameraAngle::CloseUp),
+                            (2 as usize,"Medium Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::MediumShot),
+                            (3 as usize,"Over The Shoulder",egui::include_image!("../assets/ferris.png"),CameraAngle::OverTheShoulder),
+                            (4 as usize,"Long Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::LongShot),
+                            (5 as usize,"Extreme Long Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::ExtremeLongShot),
+                            (6 as usize,"Full Shot Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::FullShot),
+                            (7 as usize,"Full Body View",egui::include_image!("../assets/ferris.png"),CameraAngle::FullBodyView),
+                            (8 as usize,"POV Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::POVShot),
+                            (9 as usize,"Eye Level Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::EyeLevelShot),
+                            (10 as usize,"High Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::HighAngleShot),
+                            (11 as usize,"Low Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::LowAngleShot),
+                            (12 as usize,"Dutch Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::DutchAngleShot),
+                            (13 as usize,"Drone Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::DroneShot),
+                            (14 as usize,"Gro pro Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::GoProShot),
+                            (15 as usize,"Fish eye Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::FishEyeShot),
+                            (16 as usize,"Bird eye view",egui::include_image!("../assets/ferris.png"),CameraAngle::BirdEyeView),
+                            (17 as usize,"Rule of thirds Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::RuleOfThirdShot),
+                            (18 as usize,"Candid Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::CandidShot),
+                            (19 as usize,"Silhouette Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::SilhouetteShot),
             ];
 
             ui.label(" Camera Angle :  ");
 
             ui.horizontal(|ui| {
+                ui.vertical(|ui| {
 
 
-                let mut selected_camera_angle_index :Option<usize>= None; 
-                // Create a button for each image option
-                for (index, (string_name,image_path,camera_angle)) in camera_angle_vec.iter().enumerate() {
-                    if ui.button(string_name.clone()).clicked() {
-                        selected_camera_angle_index = Some(index);
-                        self.camera_angle = Some((string_name.clone(),image_path.clone(),camera_angle.clone()));
+                    let mut selected_camera_angle_index :Option<usize>= None; 
+                    // Create a button for each image option
+                    for chunk in camera_angle_vec.chunks(5){
+                        ui.horizontal(|ui| {
+                            for (index, string_name,image_path,camera_angle) in chunk.iter() {
+                                if ui.button(string_name.clone()).clicked() {
+                                    selected_camera_angle_index = Some(*index);
+                                    self.camera_angle = Some((string_name.clone(),image_path.clone(),camera_angle.clone()));
+                                }
+                            }
+                        });
                     }
-                }    
-                if ui.button("None").clicked(){
-                    self.camera_angle = None;
+
+                    if ui.button("None").clicked(){
+                        self.camera_angle = None;
+                    }
+
+                });
+
+                // Display the selected image if available
+                if let Some(camera_angle) = self.camera_angle.clone() {
+                                ui.image(camera_angle.1);
                 }
 
             });
-
-            // Display the selected image if available
-            if let Some(camera_angle) = self.camera_angle.clone() {
-                            ui.image(camera_angle.1);
-            }
-
             ui.horizontal(|ui| {
                 let camera_angle_weight_label  = ui.label(" Camera Angle Weightage : ");
                     ui.radio_value(&mut self.camera_angle_weight, AttributeWeight::Low, "Low").labelled_by(camera_angle_weight_label.id);
                     ui.radio_value(&mut self.camera_angle_weight, AttributeWeight::High, "High").labelled_by(camera_angle_weight_label.id);
-                });
+            });
 
             // Selected the camera angle above
 
             // StudioLights, BrightLights, NeonLights, WarmLights , ColdLights , HighKeyLighting , LowKeyLighting, RimLighting , PracticaLighting , MotivatorLighting , Sunny , GoldenHour , Rainy , Foggy , Night , Afternoon 
             let lighting_vec = vec![
-                ("Studio Lights",egui::include_image!("../assets/ferris.png"),Lighting::StudioLights),
-                ("Bright Lights",egui::include_image!("../assets/ferris.png"),Lighting::BrightLights),
-                ("Neon Lights",egui::include_image!("../assets/ferris.png"),Lighting::NeonLights),
-                ("Warm Lights",egui::include_image!("../assets/ferris.png"),Lighting::WarmLights),
-                ("Cold Lights",egui::include_image!("../assets/ferris.png"),Lighting::ColdLights),
-                ("High Key Lighting",egui::include_image!("../assets/ferris.png"),Lighting::HighKeyLighting),
-                ("Low Key Lighting",egui::include_image!("../assets/ferris.png"),Lighting::LowKeyLighting),
-                ("Rim Lighting",egui::include_image!("../assets/ferris.png"),Lighting::RimLighting),
-                ("Practical Lighting",egui::include_image!("../assets/ferris.png"),Lighting::PracticalLighting),
-                ("Motivator Lighting",egui::include_image!("../assets/ferris.png"),Lighting::MotivatorLighting),
-                ("Sunny",egui::include_image!("../assets/ferris.png"),Lighting::Sunny),
-                ("Golden Hour",egui::include_image!("../assets/ferris.png"),Lighting::GoldenHour),
-                ("Rainy",egui::include_image!("../assets/ferris.png"),Lighting::Rainy),
-                ("Foggy",egui::include_image!("../assets/ferris.png"),Lighting::Foggy),
-                ("Night",egui::include_image!("../assets/ferris.png"),Lighting::Night),
-                ("Afternoon",egui::include_image!("../assets/ferris.png"),Lighting::Afternoon)
+                (0 as usize,"Studio Lights",egui::include_image!("../assets/ferris.png"),Lighting::StudioLights),
+                (1 as usize,"Bright Lights",egui::include_image!("../assets/ferris.png"),Lighting::BrightLights),
+                (2 as usize,"Neon Lights",egui::include_image!("../assets/ferris.png"),Lighting::NeonLights),
+                (3 as usize,"Warm Lights",egui::include_image!("../assets/ferris.png"),Lighting::WarmLights),
+                (4 as usize,"Cold Lights",egui::include_image!("../assets/ferris.png"),Lighting::ColdLights),
+                (5 as usize,"High Key Lighting",egui::include_image!("../assets/ferris.png"),Lighting::HighKeyLighting),
+                (6 as usize,"Low Key Lighting",egui::include_image!("../assets/ferris.png"),Lighting::LowKeyLighting),
+                (7 as usize,"Rim Lighting",egui::include_image!("../assets/ferris.png"),Lighting::RimLighting),
+                (8 as usize,"Practical Lighting",egui::include_image!("../assets/ferris.png"),Lighting::PracticalLighting),
+                (9 as usize,"Motivator Lighting",egui::include_image!("../assets/ferris.png"),Lighting::MotivatorLighting),
+                (10 as usize,"Sunny",egui::include_image!("../assets/ferris.png"),Lighting::Sunny),
+                (11 as usize,"Golden Hour",egui::include_image!("../assets/ferris.png"),Lighting::GoldenHour),
+                (12 as usize,"Rainy",egui::include_image!("../assets/ferris.png"),Lighting::Rainy),
+                (13 as usize,"Foggy",egui::include_image!("../assets/ferris.png"),Lighting::Foggy),
+                (14 as usize,"Night",egui::include_image!("../assets/ferris.png"),Lighting::Night),
+                (15 as usize,"Afternoon",egui::include_image!("../assets/ferris.png"),Lighting::Afternoon)
             ];
 
             ui.label(" Lighting :  ");
 
             ui.horizontal(|ui| {
+                ui.vertical(|ui| {
 
-
-                let mut selected_lighting_index :Option<usize>= None; 
-                // Create a button for each image option
-                for (index, (string_name,image_path,lighting)) in lighting_vec.iter().enumerate() {
-                    if ui.button(string_name.clone()).clicked() {
-                        selected_lighting_index = Some(index);
-                        self.lighting = Some((string_name.clone(),image_path.clone(),lighting.clone()));
+                    let mut selected_lighting_index :Option<usize>= None; 
+                    // Create a button for each image option
+                    for chunk in lighting_vec.chunks(5){
+                        ui.horizontal(|ui| {
+                            for (index, string_name,image_path,lighting) in chunk.iter() {
+                                if ui.button(string_name.clone()).clicked() {
+                                    selected_lighting_index = Some(*index);
+                                    self.lighting = Some((string_name.clone(),image_path.clone(),lighting.clone()));
+                                }
+                            }
+                        });
                     }
-                }    
-                if ui.button("None").clicked(){
-                    self.lighting = None;
+                    if ui.button("None").clicked(){
+                        self.lighting = None;
+                    }
+
+                });
+
+                // Display the selected image if available
+                if let Some(Lighting) = self.lighting.clone() {
+                    ui.image(Lighting.1);
                 }
-
             });
-
-            // Display the selected image if available
-            if let Some(Lighting) = self.lighting.clone() {
-                ui.image(Lighting.1);
-            }
 
             ui.horizontal(|ui| {
                 let lighting_label  = ui.label(" Lighting Weightage : ");
@@ -429,48 +447,55 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
             
             // Select camera style below out of     ArriAlexa, Super16_VintageFilm, CanonCinemaEOS, SonyCineAlta , QuentinTarantinoStyle , AlfredHitchcockStyle, MartinScorseseStyle , ChristopherNolanStyle , MichaelBayStyle  , JohnWooStyle  , PeterHyamsStyles , JamesCameronStyle , ElsaGarrisonStyle , WalterIoossStyle , NeilLeiferStyle, CanonEOS_1DXMarkII , GoProHero9Black , SonyAlphaA9II
             let camera_style_vec = vec![
-                ("Arri Alexa", egui::include_image!("../assets/ferris.png"), CameraStyle::ArriAlexa),
-                ("Super16 Vintage Film", egui::include_image!("../assets/ferris.png"), CameraStyle:: Super16_VintageFilm),
-                ("Canon Cinema EOS", egui::include_image!("../assets/ferris.png"), CameraStyle:: CanonCinemaEOS),
-                ("Sony Cine Alta ", egui::include_image!("../assets/ferris.png"), CameraStyle:: SonyCineAlta ),
-                ("Quentin Tarantino", egui::include_image!("../assets/ferris.png"), CameraStyle:: QuentinTarantinoStyle  ),
-                ("Alfred Hitchcock", egui::include_image!("../assets/ferris.png"), CameraStyle:: AlfredHitchcockStyle  ),
-                ("Martin Scorsese", egui::include_image!("../assets/ferris.png"), CameraStyle:: MartinScorseseStyle   ),
-                ("Christopher Nolan", egui::include_image!("../assets/ferris.png"), CameraStyle:: ChristopherNolanStyle),
-                ("Michael Bay",egui::include_image!("../assets/ferris.png"), CameraStyle:: MichaelBayStyle    ),
-                ("John Woo",egui::include_image!("../assets/ferris.png"), CameraStyle:: JohnWooStyle     ),
-                ("Peter Hyams  ",egui::include_image!("../assets/ferris.png"), CameraStyle:: PeterHyamsStyles  ),
-                ("James Cameron",egui::include_image!("../assets/ferris.png"), CameraStyle:: JamesCameronStyle   ),
-                ("Elsa Garrison",egui::include_image!("../assets/ferris.png"), CameraStyle:: ElsaGarrisonStyle),
-                ("Walter Iooss",egui::include_image!("../assets/ferris.png"), CameraStyle:: WalterIoossStyle    ),
-                ("Neil Leifer",egui::include_image!("../assets/ferris.png"), CameraStyle:: NeilLeiferStyle     ),
-                ("Canon EOS 1DX Mark II ", egui::include_image!("../assets/ferris.png"), CameraStyle::CanonEOS_1DXMarkII  ),
-                ("Sony Alpha A9 II",egui::include_image!("../assets/ferris.png"), CameraStyle:: SonyAlphaA9II),
+                (0 as usize,"Arri Alexa", egui::include_image!("../assets/ferris.png"), CameraStyle::ArriAlexa),
+                (1 as usize,"Super16 Vintage Film", egui::include_image!("../assets/ferris.png"), CameraStyle:: Super16_VintageFilm),
+                (2 as usize,"Canon Cinema EOS", egui::include_image!("../assets/ferris.png"), CameraStyle:: CanonCinemaEOS),
+                (3 as usize,"Sony Cine Alta ", egui::include_image!("../assets/ferris.png"), CameraStyle:: SonyCineAlta ),
+                (4 as usize,"Quentin Tarantino", egui::include_image!("../assets/ferris.png"), CameraStyle:: QuentinTarantinoStyle  ),
+                (5 as usize,"Alfred Hitchcock", egui::include_image!("../assets/ferris.png"), CameraStyle:: AlfredHitchcockStyle  ),
+                (6 as usize,"Martin Scorsese", egui::include_image!("../assets/ferris.png"), CameraStyle:: MartinScorseseStyle   ),
+                (7 as usize,"Christopher Nolan", egui::include_image!("../assets/ferris.png"), CameraStyle:: ChristopherNolanStyle),
+                (8 as usize,"Michael Bay",egui::include_image!("../assets/ferris.png"), CameraStyle:: MichaelBayStyle    ),
+                (9 as usize,"John Woo",egui::include_image!("../assets/ferris.png"), CameraStyle:: JohnWooStyle     ),
+                (10 as usize,"Peter Hyams  ",egui::include_image!("../assets/ferris.png"), CameraStyle:: PeterHyamsStyles  ),
+                (11 as usize,"James Cameron",egui::include_image!("../assets/ferris.png"), CameraStyle:: JamesCameronStyle   ),
+                (12 as usize,"Elsa Garrison",egui::include_image!("../assets/ferris.png"), CameraStyle:: ElsaGarrisonStyle),
+                (13 as usize,"Walter Iooss",egui::include_image!("../assets/ferris.png"), CameraStyle:: WalterIoossStyle    ),
+                (14 as usize,"Neil Leifer",egui::include_image!("../assets/ferris.png"), CameraStyle:: NeilLeiferStyle     ),
+                (15 as usize,"Canon EOS 1DX Mark II ", egui::include_image!("../assets/ferris.png"), CameraStyle::CanonEOS_1DXMarkII  ),
+                (16 as usize,"Sony Alpha A9 II",egui::include_image!("../assets/ferris.png"), CameraStyle:: SonyAlphaA9II),
             ];
 
             ui.label(" Camera Style :  ");
 
             ui.horizontal(|ui| {
+                ui.vertical(|ui| {
 
 
-                let mut selected_camera_style_index :Option<usize>= None; 
-                // Create a button for each image option
-                for (index, (string_name,image_path,camera_style)) in camera_style_vec.iter().enumerate() {
-                    if ui.button(string_name.clone()).clicked() {
-                        selected_camera_style_index = Some(index);
-                        self.camera_style = Some((string_name.clone(),image_path.clone(),camera_style.clone()));
+                    let mut selected_camera_style_index :Option<usize>= None; 
+                    // Create a button for each image option
+                    for chunk in camera_style_vec.chunks(5){
+                        ui.horizontal(|ui| {
+                            for (index, string_name,image_path,camera_style) in chunk.iter() {
+                                if ui.button(string_name.clone()).clicked() {
+                                    selected_camera_style_index = Some(*index);
+                                    self.camera_style = Some((string_name.clone(),image_path.clone(),camera_style.clone()));
+                                }
+                            }
+                        });
                     }
-                }    
-                if ui.button("None").clicked(){
-                    self.lighting = None;
+                    if ui.button("None").clicked(){
+                        self.lighting = None;
+                    }
+                
+
+                });
+
+                // Display the selected image if available
+                if let Some(camera_style) = self.camera_style.clone() {
+                    ui.image(camera_style.1);
                 }
-
             });
-
-            // Display the selected image if available
-            if let Some(camera_style) = self.camera_style.clone() {
-                ui.image(camera_style.1);
-            }
             
             ui.horizontal(|ui| {
                 let camera_style_weight_label  = ui.label(" Camera Angle Weightage : ");
