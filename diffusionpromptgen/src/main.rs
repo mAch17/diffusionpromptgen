@@ -102,7 +102,7 @@ enum CameraStyle {
 struct FOOCUSDiffusionPromptApp{
     pub subject_description : String,
     pub subject_weight : AttributeWeight,
-    pub subject_attributes : Vec<(String,AttributeWeight)>,
+    
     
     
     pub cinematic_look : Option<(&'static str,  egui::ImageSource<'static>,Cinematography)>,
@@ -116,8 +116,22 @@ struct FOOCUSDiffusionPromptApp{
     pub lighting_weight : AttributeWeight,
 
     pub camera_style : Option<(&'static str,  egui::ImageSource<'static>,CameraStyle)>,
-    pub camera_style_weight : AttributeWeight
+    pub camera_style_weight : AttributeWeight,
 
+    pub attribute1 : String,
+    pub attribute1_weight : AttributeWeight,
+
+    pub attribute2 : String,
+    pub attribute2_weight  : AttributeWeight,
+
+    pub attribute3  : String,
+    pub attribute3_weight  : AttributeWeight,
+
+    pub attribute4 : String,
+    pub attribute4_weight  : AttributeWeight,
+
+    pub attribute5 : String,
+    pub attribute5_weight  : AttributeWeight,
 
 
 }
@@ -128,7 +142,7 @@ impl Default for FOOCUSDiffusionPromptApp {
             // initialize all fields to their default values:
             subject_description : String::from(""),
             subject_weight : AttributeWeight::Low,
-            subject_attributes : Vec::new(),        
+        
 
             cinematic_look : None,
             cinematic_look_weight  : AttributeWeight::Low,
@@ -138,17 +152,80 @@ impl Default for FOOCUSDiffusionPromptApp {
             lighting_weight : AttributeWeight::Low,
             camera_style    : None,
             camera_style_weight : AttributeWeight::Low,
+
+            attribute1 : String::from(""),
+            attribute1_weight   : AttributeWeight::Low,
+            attribute2   : String::from(""),
+            attribute2_weight    : AttributeWeight::Low,
+            attribute3    : String::from(""),
+            attribute3_weight     : AttributeWeight::Low,
+            attribute4     : String::from(""),
+            attribute4_weight      : AttributeWeight::Low,
+            attribute5      : String::from(""),
+            attribute5_weight       : AttributeWeight::Low,
         }
     }
 }
 
 // implement gen_prompt for FOOCUSDiffusionPromptApp returning a prompt as string
+fn make_high_weight(prompt:String) -> String {
+    format!("({},1.3)",prompt)
+    
+}
 
 fn gen_prompt( status:FOOCUSDiffusionPromptApp ) -> String {
         // TODO: implement this
         // generate a random integer
         let mut rng = thread_rng();
-        return format!("{} {}",rng.gen::<i32>(),status.subject_description);
+        let mut desc = status.subject_description;
+        if matches!(status.subject_weight, AttributeWeight::High) {
+            desc = make_high_weight(desc);
+        }
+        
+        // Iterate over status.subject_attributes and create an accumulated string with all strings in first element,when the second element of tuple is AttributeWeight::High, apply the make_high_weight function to the first element of tuple function
+        let mut attrstr = String::new();
+        if status.attribute1!=String::from("") {
+            
+            if status.attribute1_weight == AttributeWeight::High {
+                attrstr = format!("{} {}",attrstr,make_high_weight(status.attribute1));
+            } else {
+                attrstr = format!("{} {}",attrstr,status.attribute1);
+            }
+        }
+        if status.attribute2!=String::from("") {
+
+            if status.attribute2_weight == AttributeWeight::High {
+                attrstr = format!("{} {}",attrstr,make_high_weight(status.attribute2));
+            } else {
+                attrstr = format!("{} {}",attrstr,status.attribute2);
+             }
+         }
+        if status.attribute3!=String::from("")  {
+            if status.attribute3_weight == AttributeWeight::High {
+                attrstr = format!("{}  {}",attrstr,make_high_weight(status.attribute3));
+            } else {
+                attrstr = format!("{}  {}",attrstr,status.attribute3);
+            }
+        }
+        if status.attribute4!=String::from("") {
+            if status.attribute4_weight == AttributeWeight::High  {
+                attrstr = format!("{}   {}",attrstr,make_high_weight(status.attribute4));
+             } else  {
+                 attrstr = format!("{}   {}",attrstr,status.attribute4);
+             }
+        }
+        if status.attribute5!=String::from("") {
+            if status.attribute5_weight == AttributeWeight::High  {
+                attrstr = format!("{}   {}",attrstr,make_high_weight(status.attribute5));
+             } else  {
+                 attrstr = format!("{}   {}",attrstr,status.attribute5);
+             }
+        }
+        
+
+
+
+        return format!("{} {} {}",rng.gen::<i32>(),desc,attrstr);
 }
 
 
@@ -171,95 +248,70 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
 
             });
 
-            ui.horizontal(|ui| {
+           
 
-                // adding upto 5 additional attrbutes
-                let attributes_label = ui.label(" You can add upto 5 attributes of the subject below (all optional) and mention their priority : ");
-            });
+            // adding upto 5 additional attrbutes
+            let attributes_label = ui.label(" You can add upto 5 attributes of the subject below (all optional) and mention their priority : ");
+
 
             ui.horizontal(|ui| {
 
                 // Attribute 1
-                let mut attribute1 = String::from("");
-                let mut attribute1_weight = AttributeWeight::Low;
+                
                 let attribute1_decription_label = ui.label(" Attribute1 [Optional] : ");
-                ui.text_edit_singleline(&mut attribute1)
+                ui.text_edit_singleline(&mut self.attribute1)
                     .labelled_by(attribute1_decription_label.id);
                 let attribute1_description_weight_label  = ui.label(" Subject Weightage : ");
-                ui.radio_value(&mut attribute1_weight, AttributeWeight::Low, "Low").labelled_by(attribute1_description_weight_label.id);
-                ui.radio_value(&mut attribute1_weight, AttributeWeight::High, "High").labelled_by(attribute1_description_weight_label.id);
+                ui.radio_value(&mut self.attribute1_weight, AttributeWeight::Low, "Low").labelled_by(attribute1_description_weight_label.id);
+                ui.radio_value(&mut self.attribute1_weight, AttributeWeight::High, "High").labelled_by(attribute1_description_weight_label.id);
 
-                if attribute1 != String::from(""){
-                    self.subject_attributes.push( (attribute1, attribute1_weight) );
-                }
+
 
             });
 
             ui.horizontal(|ui| {
                 // Similarly add Attribute 2
-                let mut attribute2 = String::from("");
-                let mut attribute2_weight = AttributeWeight::Low;
                 let attribute2_decription_label   = ui.label(" Attribute2 [Optional] : ");
-                ui.text_edit_singleline(&mut attribute2)
+                ui.text_edit_singleline(&mut self.attribute2)
                     .labelled_by(attribute2_decription_label.id);
                 let attribute2_description_weight_label   = ui.label(" Subject Weightage  :  ");
-                ui.radio_value(&mut attribute2_weight, AttributeWeight::Low, "Low").labelled_by(attribute2_description_weight_label.id);
-                ui.radio_value(&mut attribute2_weight, AttributeWeight::High, "High").labelled_by(attribute2_description_weight_label.id);
-                
-                if attribute2 != String::from(""){
-                    self.subject_attributes.push( (attribute2, attribute2_weight) );
-                }
+                ui.radio_value(&mut self.attribute2_weight, AttributeWeight::Low, "Low").labelled_by(attribute2_description_weight_label.id);
+                ui.radio_value(&mut self.attribute2_weight, AttributeWeight::High, "High").labelled_by(attribute2_description_weight_label.id);
+
 
             });
 
             ui.horizontal(|ui| {
                 // Similarly add Attribute 3
-                let mut attribute3 = String::from("");
-                let mut attribute3_weight = AttributeWeight::Low;
                 let attribute3_decription_label   = ui.label(" Attribute3 [Optional] : ");
-                ui.text_edit_singleline(&mut attribute3)
+                ui.text_edit_singleline(&mut self.attribute3)
                     .labelled_by(attribute3_decription_label.id);
                 let attribute3_description_weight_label   = ui.label(" Subject Weightage  :  ");
-                ui.radio_value(&mut attribute3_weight, AttributeWeight::Low, "Low").labelled_by(attribute3_description_weight_label.id);
-                ui.radio_value(&mut attribute3_weight, AttributeWeight::High, "High").labelled_by(attribute3_description_weight_label.id);
-
-                if attribute3 != String::from(""){
-                    self.subject_attributes.push( (attribute3, attribute3_weight) );
-                }
+                ui.radio_value(&mut self.attribute3_weight, AttributeWeight::Low, "Low").labelled_by(attribute3_description_weight_label.id);
+                ui.radio_value(&mut self.attribute3_weight, AttributeWeight::High, "High").labelled_by(attribute3_description_weight_label.id);
 
             });
 
             ui.horizontal(|ui| {
                 // Similarity add attribute 4 and 5
-                let mut attribute4 = String::from("");
-                let mut attribute4_weight  = AttributeWeight::Low;
 
                 let attribute4_decription_label    = ui.label(" Attribute4 [Optional] : ");
-                ui.text_edit_singleline(&mut attribute4)
+                ui.text_edit_singleline(&mut self.attribute4)
                   .labelled_by(attribute4_decription_label.id);
                 let attribute4_description_weight_label    = ui.label(" Subject Weightage   :   ");
-                ui.radio_value(&mut attribute4_weight, AttributeWeight::Low,"Low").labelled_by(attribute4_description_weight_label.id);
-                ui.radio_value(&mut attribute4_weight, AttributeWeight::High,"High").labelled_by(attribute4_description_weight_label.id);
-
-                if attribute4 != String::from(""){
-                    self.subject_attributes.push( (attribute4, attribute4_weight) );
-                }
+                ui.radio_value(&mut self.attribute4_weight, AttributeWeight::Low,"Low").labelled_by(attribute4_description_weight_label.id);
+                ui.radio_value(&mut self.attribute4_weight, AttributeWeight::High,"High").labelled_by(attribute4_description_weight_label.id);
 
             });
 
-            ui.horizontal(|ui| {
-                let mut attribute5 = String::from("");
-                let mut attribute5_weight  = AttributeWeight::Low;  
+            ui.horizontal(|ui| { 
                 let attribute5_decription_label    = ui.label(" Attribute5 [Optional] : ");
-                ui.text_edit_singleline(&mut attribute5)
+                ui.text_edit_singleline(&mut self.attribute5)
                   .labelled_by(attribute5_decription_label.id);
                 let attribute5_description_weight_label    = ui.label(" Subject Weightage   :   ");
-                ui.radio_value(&mut attribute5_weight, AttributeWeight::Low,"Low").labelled_by(attribute5_description_weight_label.id);
-                ui.radio_value(&mut attribute5_weight, AttributeWeight::High,"High").labelled_by(attribute5_description_weight_label.id);
+                ui.radio_value(&mut self.attribute5_weight, AttributeWeight::Low,"Low").labelled_by(attribute5_description_weight_label.id);
+                ui.radio_value(&mut self.attribute5_weight, AttributeWeight::High,"High").labelled_by(attribute5_description_weight_label.id);
 
-                if attribute5 != String::from(""){
-                    self.subject_attributes.push( (attribute5, attribute5_weight) );
-                }
 
             });
 
