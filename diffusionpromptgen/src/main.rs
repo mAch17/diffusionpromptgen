@@ -222,10 +222,50 @@ fn gen_prompt( status:FOOCUSDiffusionPromptApp ) -> String {
              }
         }
         
+        let mut basestr = format!("{} {}",desc,attrstr);
+        
+        if let Some(camera_angle) = status.camera_angle{
+            let camera_angle_str = camera_angle.0;
+            if status.camera_angle_weight == AttributeWeight::High   {
+                basestr = format!("({},1.3) of {}",camera_angle_str,basestr);
+            } else if status.camera_angle_weight!=AttributeWeight::Low {
+                basestr = format!("{} of {}",camera_angle_str,basestr);
+            }
+        }
+
+        if let Some(cinematic_look) = status.cinematic_look{
+            let cinematic_look_str = cinematic_look.0;
+            if status.cinematic_look_weight == AttributeWeight::High    {
+                basestr  = format!("{} , ({},1.3)",basestr,cinematic_look_str);
+            } else   {
+                basestr  = format!("{} , {}",basestr,cinematic_look_str);
+            }
+        }
+
+        if let Some(lighting_weight) = status.lighting{
+            let lighting_weight_str = lighting_weight.0;
+            if status.lighting_weight == AttributeWeight::High    {
+                basestr   = format!("{}  ,  ({},1.3)",basestr,lighting_weight_str);
+             } else     {
+                 basestr   = format!("{}  ,  {}",basestr,lighting_weight_str);
+            }
+        }
+
+        if let Some(camera_style) = status.camera_style{
+            let camera_style_str  = camera_style.0;
+            if status.camera_style_weight == AttributeWeight::High     {
+                basestr    = format!("{}  ,   ({},1.3)",basestr,camera_style_str);
+             } else      {
+                 basestr    = format!("{}  ,   {}",basestr,camera_style_str);
+            }
+         }
 
 
 
-        return format!("{} {} {}",rng.gen::<i32>(),desc,attrstr);
+
+
+
+        return format!("prompt : {} , random number : {}",basestr,rng.gen::<i32>());
 }
 
 
@@ -318,21 +358,21 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
             // Code below for the enum Cinematography
 
             let cinematography_vec = vec![
-                (0 as usize,"Cinematic",egui::include_image!("../assets/ferris.png"),Cinematography::Cinematic),
+                (0 as usize,"Cinematic",egui::include_image!("../assets/cinematic.png"),Cinematography::Cinematic),
                // Add new elements with the first being incrementing index, second being "../assets/ferris.png", third being from [   Cinematography::UltraRealistic, Cinematography::FilmGrain, Cinematography::DramaticLighting, Cinematography::GenreHorror, Cinematography::GenreWestern, Cinematography::GenreFantasy, Cinematography::GenreRomantic, Cinematography::GenreAnimation, Cinematography::GenreManga,  Cinematography::ActionScene, Cinematography::MotionBlur, Cinematography::DynamicAction,  Cinematography::DynamicMotion]
-                (1 as usize,"Ultra Realistic",egui::include_image!("../assets/ferris.png"),Cinematography::UltraRealistic),
-                (2 as usize, "Film Grain",egui::include_image!("../assets/ferris.png"),Cinematography::FilmGrain),
-                (3 as usize, "Dramatic Lighting",egui::include_image!("../assets/ferris.png"),Cinematography::DramaticLighting),
-                (4 as usize, "Horror",egui::include_image!("../assets/ferris.png"),Cinematography::GenreHorror),
-                (5 as usize, "Western",egui::include_image!("../assets/ferris.png"),Cinematography::GenreWestern),
-                (6 as usize, "Fantasy",egui::include_image!("../assets/ferris.png"),Cinematography::GenreFantasy),
-                (7 as usize, "Romantic",egui::include_image!("../assets/ferris.png"),Cinematography::GenreRomantic),
-                (8 as usize, "Animation",egui::include_image!("../assets/ferris.png"),Cinematography::GenreAnimation),
-                (9 as usize, "Manga",egui::include_image!("../assets/ferris.png"),Cinematography::GenreManga),
-                (10 as usize,"Action Scene",egui::include_image!("../assets/ferris.png"),Cinematography::ActionScene),
-                (11 as usize, "Motion Blur",egui::include_image!("../assets/ferris.png"),Cinematography::MotionBlur),
-                (12 as usize, "Dynamic Action",egui::include_image!("../assets/ferris.png"),Cinematography::DynamicAction),
-                (13 as usize, "Dynamic Motion",egui::include_image!("../assets/ferris.png"),Cinematography::DynamicMotion),
+                (1 as usize,"Ultra Realistic",egui::include_image!("../assets/ultra_realistic.png"),Cinematography::UltraRealistic),
+                (2 as usize, "Film Grain",egui::include_image!("../assets/film_grain.png"),Cinematography::FilmGrain),
+                (3 as usize, "Dramatic Lighting",egui::include_image!("../assets/dramatic_lighting.png"),Cinematography::DramaticLighting),
+                (4 as usize, "Horror",egui::include_image!("../assets/genre_horror.png"),Cinematography::GenreHorror),
+                (5 as usize, "Western",egui::include_image!("../assets/genre_western.png"),Cinematography::GenreWestern),
+                (6 as usize, "Fantasy",egui::include_image!("../assets/genre_fantasy.png"),Cinematography::GenreFantasy),
+                (7 as usize, "Romantic",egui::include_image!("../assets/genre_romantic.png"),Cinematography::GenreRomantic),
+                (8 as usize, "Animation",egui::include_image!("../assets/genre_animation.png"),Cinematography::GenreAnimation),
+                (9 as usize, "Manga",egui::include_image!("../assets/genre_manga.png"),Cinematography::GenreManga),
+                (10 as usize,"Action Scene",egui::include_image!("../assets/action_scene.png"),Cinematography::ActionScene),
+                (11 as usize, "Motion Blur",egui::include_image!("../assets/motion_blur.png"),Cinematography::MotionBlur),
+                (12 as usize, "Dynamic Action",egui::include_image!("../assets/dynamic_action.png"),Cinematography::DynamicAction),
+                (13 as usize, "Dynamic Motion",egui::include_image!("../assets/dynamic_motion.png"),Cinematography::DynamicMotion),
             ];
 
             ui.label(" Cinematography :  ");
@@ -378,26 +418,26 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
             // Camera Angle Selection
 
             let camera_angle_vec = vec![
-                            (0 as usize,"Extreme Close Up",egui::include_image!("../assets/ferris.png"),CameraAngle::ExtremeCloseUp),
-                            (1 as usize,"Close Up",egui::include_image!("../assets/ferris.png"),CameraAngle::CloseUp),
-                            (2 as usize,"Medium Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::MediumShot),
-                            (3 as usize,"Over The Shoulder",egui::include_image!("../assets/ferris.png"),CameraAngle::OverTheShoulder),
-                            (4 as usize,"Long Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::LongShot),
-                            (5 as usize,"Extreme Long Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::ExtremeLongShot),
-                            (6 as usize,"Full Shot Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::FullShot),
-                            (7 as usize,"Full Body View",egui::include_image!("../assets/ferris.png"),CameraAngle::FullBodyView),
-                            (8 as usize,"POV Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::POVShot),
-                            (9 as usize,"Eye Level Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::EyeLevelShot),
-                            (10 as usize,"High Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::HighAngleShot),
-                            (11 as usize,"Low Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::LowAngleShot),
-                            (12 as usize,"Dutch Angle Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::DutchAngleShot),
-                            (13 as usize,"Drone Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::DroneShot),
-                            (14 as usize,"Gro pro Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::GoProShot),
-                            (15 as usize,"Fish eye Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::FishEyeShot),
-                            (16 as usize,"Bird eye view",egui::include_image!("../assets/ferris.png"),CameraAngle::BirdEyeView),
-                            (17 as usize,"Rule of thirds Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::RuleOfThirdShot),
-                            (18 as usize,"Candid Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::CandidShot),
-                            (19 as usize,"Silhouette Shot",egui::include_image!("../assets/ferris.png"),CameraAngle::SilhouetteShot),
+                            (0 as usize,"Extreme Close Up",egui::include_image!("../assets/extreme_close_up.png"),CameraAngle::ExtremeCloseUp),
+                            (1 as usize,"Close Up",egui::include_image!("../assets/close_up.png"),CameraAngle::CloseUp),
+                            (2 as usize,"Medium Shot",egui::include_image!("../assets/medium_shot.png"),CameraAngle::MediumShot),
+                            (3 as usize,"Over The Shoulder",egui::include_image!("../assets/over_the_shoulder.png"),CameraAngle::OverTheShoulder),
+                            (4 as usize,"Long Shot",egui::include_image!("../assets/long_shot.png"),CameraAngle::LongShot),
+                            (5 as usize,"Extreme Long Shot",egui::include_image!("../assets/extreme_long_shot.png"),CameraAngle::ExtremeLongShot),
+                            (6 as usize,"Full Shot",egui::include_image!("../assets/full_shot.png"),CameraAngle::FullShot),
+                            (7 as usize,"Full Body View",egui::include_image!("../assets/full_body_view.png"),CameraAngle::FullBodyView),
+                            (8 as usize,"POV Shot",egui::include_image!("../assets/pov_shot.png"),CameraAngle::POVShot),
+                            (9 as usize,"Eye Level Shot",egui::include_image!("../assets/eye_level_shot.png"),CameraAngle::EyeLevelShot),
+                            (10 as usize,"High Angle Shot",egui::include_image!("../assets/high_angle_shot.png"),CameraAngle::HighAngleShot),
+                            (11 as usize,"Low Angle Shot",egui::include_image!("../assets/low_angle_shot.png"),CameraAngle::LowAngleShot),
+                            (12 as usize,"Dutch Angle Shot",egui::include_image!("../assets/dutch_angle_shot.png"),CameraAngle::DutchAngleShot),
+                            (13 as usize,"Drone Shot",egui::include_image!("../assets/drone_shot.png"),CameraAngle::DroneShot),
+                            (14 as usize,"Gro pro Shot",egui::include_image!("../assets/go_pro_shot.png"),CameraAngle::GoProShot),
+                            (15 as usize,"Fish eye Shot",egui::include_image!("../assets/fish_eye_shot.png"),CameraAngle::FishEyeShot),
+                            (16 as usize,"Bird eye view",egui::include_image!("../assets/bird_eye_view.png"),CameraAngle::BirdEyeView),
+                            (17 as usize,"Rule of thirds Shot",egui::include_image!("../assets/rule_of_third_shot.png"),CameraAngle::RuleOfThirdShot),
+                            (18 as usize,"Candid Shot",egui::include_image!("../assets/candid_shot.png"),CameraAngle::CandidShot),
+                            (19 as usize,"Silhouette Shot",egui::include_image!("../assets/silhouette_shot.png"),CameraAngle::SilhouetteShot),
             ];
 
             ui.label(" Camera Angle :  ");
@@ -441,22 +481,22 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
 
             // StudioLights, BrightLights, NeonLights, WarmLights , ColdLights , HighKeyLighting , LowKeyLighting, RimLighting , PracticaLighting , MotivatorLighting , Sunny , GoldenHour , Rainy , Foggy , Night , Afternoon 
             let lighting_vec = vec![
-                (0 as usize,"Studio Lights",egui::include_image!("../assets/ferris.png"),Lighting::StudioLights),
-                (1 as usize,"Bright Lights",egui::include_image!("../assets/ferris.png"),Lighting::BrightLights),
-                (2 as usize,"Neon Lights",egui::include_image!("../assets/ferris.png"),Lighting::NeonLights),
-                (3 as usize,"Warm Lights",egui::include_image!("../assets/ferris.png"),Lighting::WarmLights),
-                (4 as usize,"Cold Lights",egui::include_image!("../assets/ferris.png"),Lighting::ColdLights),
-                (5 as usize,"High Key Lighting",egui::include_image!("../assets/ferris.png"),Lighting::HighKeyLighting),
-                (6 as usize,"Low Key Lighting",egui::include_image!("../assets/ferris.png"),Lighting::LowKeyLighting),
-                (7 as usize,"Rim Lighting",egui::include_image!("../assets/ferris.png"),Lighting::RimLighting),
-                (8 as usize,"Practical Lighting",egui::include_image!("../assets/ferris.png"),Lighting::PracticalLighting),
-                (9 as usize,"Motivator Lighting",egui::include_image!("../assets/ferris.png"),Lighting::MotivatorLighting),
-                (10 as usize,"Sunny",egui::include_image!("../assets/ferris.png"),Lighting::Sunny),
-                (11 as usize,"Golden Hour",egui::include_image!("../assets/ferris.png"),Lighting::GoldenHour),
-                (12 as usize,"Rainy",egui::include_image!("../assets/ferris.png"),Lighting::Rainy),
-                (13 as usize,"Foggy",egui::include_image!("../assets/ferris.png"),Lighting::Foggy),
-                (14 as usize,"Night",egui::include_image!("../assets/ferris.png"),Lighting::Night),
-                (15 as usize,"Afternoon",egui::include_image!("../assets/ferris.png"),Lighting::Afternoon)
+                (0 as usize,"Studio Lights",egui::include_image!("../assets/studio_lights.png"),Lighting::StudioLights),
+                (1 as usize,"Bright Lights",egui::include_image!("../assets/bright_lights.png"),Lighting::BrightLights),
+                (2 as usize,"Neon Lights",egui::include_image!("../assets/neon_lights.png"),Lighting::NeonLights),
+                (3 as usize,"Warm Lights",egui::include_image!("../assets/warm_lights.png"),Lighting::WarmLights),
+                (4 as usize,"Cold Lights",egui::include_image!("../assets/cold_lights.png"),Lighting::ColdLights),
+                (5 as usize,"High Key Lighting",egui::include_image!("../assets/high_key_lighting.png"),Lighting::HighKeyLighting),
+                (6 as usize,"Low Key Lighting",egui::include_image!("../assets/low_key_lighting.png"),Lighting::LowKeyLighting),
+                (7 as usize,"Rim Lighting",egui::include_image!("../assets/rim_lighting.png"),Lighting::RimLighting),
+                (8 as usize,"Practical Lighting",egui::include_image!("../assets/practical_lighting.png"),Lighting::PracticalLighting),
+                (9 as usize,"Motivator Lighting",egui::include_image!("../assets/motivator_lighting.png"),Lighting::MotivatorLighting),
+                (10 as usize,"Sunny",egui::include_image!("../assets/sunny.png"),Lighting::Sunny),
+                (11 as usize,"Golden Hour",egui::include_image!("../assets/golden_hour.png"),Lighting::GoldenHour),
+                (12 as usize,"Rainy",egui::include_image!("../assets/rainy.png"),Lighting::Rainy),
+                (13 as usize,"Foggy",egui::include_image!("../assets/foggy.png"),Lighting::Foggy),
+                (14 as usize,"Night",egui::include_image!("../assets/night.png"),Lighting::Night),
+                (15 as usize,"Afternoon",egui::include_image!("../assets/afternoon.png"),Lighting::Afternoon)
             ];
 
             ui.label(" Lighting :  ");
@@ -499,23 +539,23 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
             
             // Select camera style below out of     ArriAlexa, Super16_VintageFilm, CanonCinemaEOS, SonyCineAlta , QuentinTarantinoStyle , AlfredHitchcockStyle, MartinScorseseStyle , ChristopherNolanStyle , MichaelBayStyle  , JohnWooStyle  , PeterHyamsStyles , JamesCameronStyle , ElsaGarrisonStyle , WalterIoossStyle , NeilLeiferStyle, CanonEOS_1DXMarkII , GoProHero9Black , SonyAlphaA9II
             let camera_style_vec = vec![
-                (0 as usize,"Arri Alexa", egui::include_image!("../assets/ferris.png"), CameraStyle::ArriAlexa),
-                (1 as usize,"Super16 Vintage Film", egui::include_image!("../assets/ferris.png"), CameraStyle:: Super16_VintageFilm),
-                (2 as usize,"Canon Cinema EOS", egui::include_image!("../assets/ferris.png"), CameraStyle:: CanonCinemaEOS),
-                (3 as usize,"Sony Cine Alta ", egui::include_image!("../assets/ferris.png"), CameraStyle:: SonyCineAlta ),
-                (4 as usize,"Quentin Tarantino", egui::include_image!("../assets/ferris.png"), CameraStyle:: QuentinTarantinoStyle  ),
-                (5 as usize,"Alfred Hitchcock", egui::include_image!("../assets/ferris.png"), CameraStyle:: AlfredHitchcockStyle  ),
-                (6 as usize,"Martin Scorsese", egui::include_image!("../assets/ferris.png"), CameraStyle:: MartinScorseseStyle   ),
-                (7 as usize,"Christopher Nolan", egui::include_image!("../assets/ferris.png"), CameraStyle:: ChristopherNolanStyle),
-                (8 as usize,"Michael Bay",egui::include_image!("../assets/ferris.png"), CameraStyle:: MichaelBayStyle    ),
-                (9 as usize,"John Woo",egui::include_image!("../assets/ferris.png"), CameraStyle:: JohnWooStyle     ),
-                (10 as usize,"Peter Hyams  ",egui::include_image!("../assets/ferris.png"), CameraStyle:: PeterHyamsStyles  ),
-                (11 as usize,"James Cameron",egui::include_image!("../assets/ferris.png"), CameraStyle:: JamesCameronStyle   ),
-                (12 as usize,"Elsa Garrison",egui::include_image!("../assets/ferris.png"), CameraStyle:: ElsaGarrisonStyle),
-                (13 as usize,"Walter Iooss",egui::include_image!("../assets/ferris.png"), CameraStyle:: WalterIoossStyle    ),
-                (14 as usize,"Neil Leifer",egui::include_image!("../assets/ferris.png"), CameraStyle:: NeilLeiferStyle     ),
-                (15 as usize,"Canon EOS 1DX Mark II ", egui::include_image!("../assets/ferris.png"), CameraStyle::CanonEOS_1DXMarkII  ),
-                (16 as usize,"Sony Alpha A9 II",egui::include_image!("../assets/ferris.png"), CameraStyle:: SonyAlphaA9II),
+                (0 as usize,"Arri Alexa Style", egui::include_image!("../assets/arrialexa.png"), CameraStyle::ArriAlexa),
+                (1 as usize,"Super16 Vintage Film", egui::include_image!("../assets/super16vintagefilm.png"), CameraStyle:: Super16_VintageFilm),
+                (2 as usize,"Canon Cinema EOS image", egui::include_image!("../assets/canoncinemaeos.png"), CameraStyle:: CanonCinemaEOS),
+                (3 as usize,"Sony Cine Alta image", egui::include_image!("../assets/sonycinealta.png"), CameraStyle:: SonyCineAlta ),
+                (4 as usize,"Quentin Tarantino style", egui::include_image!("../assets/quentintarantinostyle.png"), CameraStyle:: QuentinTarantinoStyle  ),
+                (5 as usize,"Alfred Hitchcock style", egui::include_image!("../assets/alfredhitchcock.png"), CameraStyle:: AlfredHitchcockStyle  ),
+                (6 as usize,"Martin Scorsese style", egui::include_image!("../assets/martinscorsese.png"), CameraStyle:: MartinScorseseStyle   ),
+                (7 as usize,"Christopher Nolan style", egui::include_image!("../assets/christophernolan.png"), CameraStyle:: ChristopherNolanStyle),
+                (8 as usize,"Michael Bay style",egui::include_image!("../assets/michaelbay.png"), CameraStyle:: MichaelBayStyle    ),
+                (9 as usize,"John Woo style",egui::include_image!("../assets/johnwoo.png"), CameraStyle:: JohnWooStyle     ),
+                (10 as usize,"Peter Hyams style",egui::include_image!("../assets/ferris.png"), CameraStyle:: PeterHyamsStyles  ),
+                (11 as usize,"James Cameron style",egui::include_image!("../assets/ferris.png"), CameraStyle:: JamesCameronStyle   ),
+                (12 as usize,"Elsa Garrison style",egui::include_image!("../assets/elsagarrison.png"), CameraStyle:: ElsaGarrisonStyle),
+                (13 as usize,"Walter Iooss style",egui::include_image!("../assets/walteriooss.png"), CameraStyle:: WalterIoossStyle    ),
+                (14 as usize,"Neil Leifer style",egui::include_image!("../assets/neilleifer.png"), CameraStyle:: NeilLeiferStyle     ),
+                (15 as usize,"Canon EOS 1DX Mark II image", egui::include_image!("../assets/canoneos1dsmarkii.png"), CameraStyle::CanonEOS_1DXMarkII  ),
+                (16 as usize,"Sony Alpha A9 II image",egui::include_image!("../assets/sonyalphaa9ii.png"), CameraStyle:: SonyAlphaA9II),
             ];
 
             ui.label(" Camera Style :  ");
@@ -537,7 +577,7 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
                         });
                     }
                     if ui.button("None").clicked(){
-                        self.lighting = None;
+                        self.camera_style = None;
                     }
                 
 
@@ -558,7 +598,7 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
             // Select the camera style above
 
 
-            ui.horizontal(|ui| {
+            ui.horizontal_wrapped(|ui| {
 
                 let output_text = gen_prompt(self.clone());
                 let po = ui.label("Output::");
@@ -567,13 +607,6 @@ impl eframe::App for FOOCUSDiffusionPromptApp {
 
             });
             
-
-            //ui.image(egui::include_image!(
-            //    "../assets/ferris.png"
-            //));
-
-
-
 
 
 
