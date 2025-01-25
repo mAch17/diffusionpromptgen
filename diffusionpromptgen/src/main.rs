@@ -221,6 +221,8 @@ fn gen_prompt( status:FOOCUSDiffusionPromptApp ) -> String {
                  attrstr = format!("{}   {}",attrstr,status.attribute5);
              }
         }
+
+        
         
         let mut basestr = format!("{} {}",desc,attrstr);
         
@@ -228,7 +230,7 @@ fn gen_prompt( status:FOOCUSDiffusionPromptApp ) -> String {
             let camera_angle_str = camera_angle.0;
             if status.camera_angle_weight == AttributeWeight::High   {
                 basestr = format!("({},1.3) of {}",camera_angle_str,basestr);
-            } else if status.camera_angle_weight!=AttributeWeight::Low {
+            } else {
                 basestr = format!("{} of {}",camera_angle_str,basestr);
             }
         }
